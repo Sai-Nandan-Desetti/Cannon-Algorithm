@@ -1,0 +1,28 @@
+#!/bin/bash
+#SBATCH --nodes 1
+#SBATCH --ntasks 16
+#SBATCH --ntasks-per-node 16
+#SBATCH --job-name cannon
+#SBATCH --time 1:00:00
+#SBATCH --output mpi_cannon.out
+
+#echo commands to stdout
+#set -x
+
+# path-to-directory should be replaced by the path to your directory where the executable is
+cd /jet/home/desetti/Gaussian\ Elimination\ and\ Cannon/
+
+module purge
+
+module gcc
+module load openmpi
+
+mpicc -g -Wall -o mpi_cannon mpi_cannon.c -lm
+
+for file in {'24.mat','720.mat','4800.mat'}
+do
+    for p in {1,4,9,16}
+    do
+        mpirun -np $p mpi_cannon $file $file
+    done
+done
